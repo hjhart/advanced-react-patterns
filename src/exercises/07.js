@@ -6,13 +6,14 @@ import {Switch} from '../switch'
 const callAll = (...fns) => (...args) => fns.forEach(fn => fn && fn(...args))
 const noop = () => {}
 
-function toggleReducer(state, {type}) {
+function toggleReducer(state, {type, initialOn}) {
   switch (type) {
     case 'toggle': {
       return {on: !state.on}
     }
-    // 🐨 add a case for 'reset' that simply returns the "initialState"
-    // which you can get from the action.
+    case 'reset': {
+      return {on: initialOn}
+    }
     default: {
       throw new Error(`Unsupported type: ${type}`)
     }
@@ -21,11 +22,11 @@ function toggleReducer(state, {type}) {
 
 // 🐨 We'll need to add an option for `onReset` and `initialOn` here
 // 💰 you can default `onReset` to `noop` and `initialOn` to `false`
-function useToggle({onToggle = noop} = {}) {
+function useToggle({onToggle = noop, onReset = noop, initialOn = false} = {}) {
   // 🐨 create an initialState object with an on property that's set to the
   // value of `initialOn` and pass that to useReducer as the initial value
-  const [state, dispatch] = React.useReducer(toggleReducer, {on: false})
-  const {on} = state
+  const initialState = { on: initialOn }
+  const [{on}, dispatch] = React.useReducer(toggleReducer, initialState)
 
   function toggle() {
     const newOn = !on
@@ -33,21 +34,25 @@ function useToggle({onToggle = noop} = {}) {
     onToggle(newOn)
   }
 
+  function reset() {
+    dispatch({type: 'reset', initialOn })
+    onReset(initialState.on)
+  }
   // 🐨 add a reset function here which dispatches a 'reset' type with your
   // initialState object and calls `onReset` with the initialState.on value
 
-  function getTogglerProps({onClick, ...props} = {}) {
+  function getTogglerProps({onClick, ...rest} = {}) {
     return {
       'aria-pressed': on,
       onClick: callAll(onClick, toggle),
-      ...props,
+      ...rest,
     }
   }
 
   return {
     on,
     toggle,
-    // 🐨 add your reset function here.
+    reset,
     getTogglerProps,
   }
 }

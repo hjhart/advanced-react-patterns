@@ -1,7 +1,7 @@
 import React from 'react'
 import {renderToggle, fireEvent} from '../../test/utils'
-import Usage from '../exercises-final/06'
-// import Usage from '../exercises/06'
+// import Usage from '../exercises-final/06'
+import Usage from '../exercises/06'
 
 test('renders a toggle component', () => {
   const {toggleButton, toggle} = renderToggle(<Usage />)
@@ -45,8 +45,8 @@ test('passes custom props to the custom-button', () => {
 /*
 http://ws.kcd.im/?ws=react%20hooks%20patterns&e=06&em=
 */
-test.skip('I submitted my elaboration and feedback', () => {
-  const submitted = false // change this when you've submitted!
+test('I submitted my elaboration and feedback', () => {
+  const submitted = true // change this when you've submitted!
   expect(submitted).toBe(true)
 })
 ////////////////////////////////

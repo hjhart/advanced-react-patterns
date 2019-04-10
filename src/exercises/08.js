@@ -25,13 +25,14 @@ import {Switch} from '../switch'
 
 const callAll = (...fns) => (...args) => fns.forEach(fn => fn && fn(...args))
 const noop = () => {}
+const ACTION_TYPES = { TOGGLE: 0, RESET: 1}
 
 function toggleReducer(state, {type, initialState}) {
   switch (type) {
-    case 'toggle': {
+    case ACTION_TYPES.TOGGLE: {
       return {on: !state.on}
     }
-    case 'reset': {
+    case ACTION_TYPES.RESET: {
       return initialState
     }
     default: {
@@ -40,8 +41,15 @@ function toggleReducer(state, {type, initialState}) {
   }
 }
 
-// 🐨 add a new option called `reducer` that defaults to `toggleReducer`
-function useToggle({onToggle = noop, onReset = noop, initialOn = false} = {}) {
+function useReducerWithValidation(reducer, initialState) {
+  return React.useReducer(validatedReducer(reducer), initialState)
+  
+  function validatedReducer(reducer) {
+    return reducer
+  }
+}
+
+function useToggle({onToggle = noop, onReset = noop, initialOn = false, reducer = toggleReducer} = {}) {
   const {current: initialState} = React.useRef({on: initialOn})
   // 🐨 instead of passing `toggleReducer` here, pass the `reducer` that's
   // provided as an option
@@ -51,12 +59,12 @@ function useToggle({onToggle = noop, onReset = noop, initialOn = false} = {}) {
 
   function toggle() {
     const newOn = !on
-    dispatch({type: 'toggle'})
+    dispatch({type: ACTION_TYPES.TOGGLE})
     onToggle(newOn)
   }
 
   function reset() {
-    dispatch({type: 'reset', initialState})
+    dispatch({type: ACTION_TYPES.RESET, initialState})
     onReset(initialState.on)
   }
 
@@ -110,16 +118,14 @@ function Usage() {
   const [timesClicked, setTimesClicked] = React.useState(0)
 
   function toggleStateReducer(state, action) {
-    // 💯 I, Hannah Hundred, give you permission to edit this function for
-    // the extra credit outlined above. 😘
     switch (action.type) {
-      case 'toggle': {
+      case ACTION_TYPES.TOGGLE: {
         if (timesClicked >= 4) {
           return {on: state.on}
         }
         return {on: !state.on}
       }
-      case 'reset': {
+      case ACTION_TYPES.RESET: {
         return {on: false}
       }
       default: {

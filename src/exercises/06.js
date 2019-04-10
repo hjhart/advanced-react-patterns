@@ -7,7 +7,7 @@ import {Switch} from '../switch'
 // their own `onClick` handler.
 
 // 💰 You're gonna need this (I'll explain what it does later):
-// const callAll = (...fns) => (...args) => fns.forEach(fn => fn && fn(...args))
+const callAll = (...fns) => (...args) => fns.forEach(fn => fn && fn(...args))
 const noop = () => {}
 
 function toggleReducer(state, {type}) {
@@ -31,25 +31,21 @@ function useToggle({onToggle = noop} = {}) {
     onToggle(newOn)
   }
 
-  function getTogglerProps() {
-    // 🐨 this function should return an object with the same properties as the
-    // togglerProps object, except it should also accept a "props" object and
-    // merge the two together.
-    // 🦉 The trick here is you need to merge the onClick you're passed with
-    // the one we need applied.
-    // 💰 onClick: callAll(props.onClick, toggle)
+  // 🐨 this function should return an object with the same properties as the
+  // togglerProps object, except it should also accept a "props" object and
+  // merge the two together.
+  // 🦉 The trick here is you need to merge the onClick you're passed with
+  // the one we need applied.
+  // 💰 onClick: callAll(props.onClick, toggle)
+  function getTogglerProps({onClick = noop, ...rest}) {
+    return { 
+      'aria-pressed': on,
+      onClick: callAll(onClick, toggle),
+      ...rest
+    }
   }
 
-  return {
-    on,
-    toggle,
-    // 🐨 you can get rid of togglerProps. We'll just use the prop getter.
-    togglerProps: {
-      'aria-pressed': on,
-      onClick: toggle,
-    },
-    getTogglerProps,
-  }
+  return { on, toggle, getTogglerProps }
 }
 
 ////////////////////////////////////////////////////////////////////

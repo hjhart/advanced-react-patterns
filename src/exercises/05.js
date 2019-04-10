@@ -41,7 +41,7 @@ function useToggle({onToggle = noop} = {}) {
   // the following properties: `on`, `toggle`, and `togglerProps`.
   // 🐨 togglerProps should be an object that has `aria-pressed` and `onClick` properties:
   // 💰 {'aria-pressed': on, onClick: toggle}
-  return [on, toggle]
+  return {on, toggle, togglerProps: {'aria-pressed': on, onClick: toggle}}
 }
 
 ////////////////////////////////////////////////////////////////////

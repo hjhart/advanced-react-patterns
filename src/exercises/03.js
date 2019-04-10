@@ -35,17 +35,7 @@ import {Switch} from '../switch'
 // 🐨 create your ToggleContext context here
 // 📜 https://reactjs.org/docs/context.html#reactcreatecontext
 
-// 🐨 remove this, you wont need it anymore! 💣
-function componentHasChild(child) {
-  for (const property in Toggle) {
-    if (Toggle.hasOwnProperty(property)) {
-      if (child.type === Toggle[property]) {
-        return true
-      }
-    }
-  }
-  return false
-}
+const ToggleContext = React.createContext()
 
 function Toggle({onToggle, children}) {
   const [on, setOn] = React.useState(false)
@@ -58,11 +48,8 @@ function Toggle({onToggle, children}) {
 
   // 🐨 remove all this 💣 and instead return <ToggleContext.Provider> where
   // the value is an object that has `on` and `toggle` on it.
-  return React.Children.map(children, child => {
-    return componentHasChild(child)
-      ? React.cloneElement(child, {on, toggle})
-      : child
-  })
+
+  return <ToggleContext.Provider value={{on, toggle}}>{children}</ToggleContext.Provider>
 }
 
 // 🐨 we'll still get the children from props (as it's passed to us by the
@@ -70,22 +57,24 @@ function Toggle({onToggle, children}) {
 // ToggleContext now
 // 💰 `const context = useContext(ToggleContext)`
 // 📜 https://reactjs.org/docs/hooks-reference.html#usecontext
-Toggle.On = function On({on, children}) {
+Toggle.On = function On({children}) {
+  const {on} = React.useContext(ToggleContext)
   return on ? children : null
 }
 
 // 🐨 do the same thing to this that you did to the On component
-Toggle.Off = function Off({on, children}) {
+Toggle.Off = function Off({children}) {
+  const {on} = React.useContext(ToggleContext)
   return on ? null : children
 }
 
 // 🐨 get `on` and `toggle` from the ToggleContext with `useContext`
-Toggle.Button = function Button({on, toggle, ...props}) {
+Toggle.Button = function Button({props}) {
+  const {on, toggle} = React.useContext(ToggleContext)
   return <Switch on={on} onClick={toggle} {...props} />
 }
 
 // 💯 Comment out the Usage function below, and use this one instead:
-// const Usage = () => <Toggle.Button />
 // Why doesn't that work? Can you figure out a way to give the developer a
 // better error message?
 
@@ -109,6 +98,7 @@ function Usage() {
     </div>
   )
 }
+
 Usage.title = 'Flexible Compound Components'
 
 export default Usage
