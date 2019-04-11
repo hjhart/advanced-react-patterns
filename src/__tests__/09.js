@@ -1,7 +1,7 @@
 import React from 'react'
 import {fireEvent, renderToggle} from '../../test/utils'
-import Usage, {Toggle} from '../exercises-final/09'
-// import Usage, {Toggle} from '../exercises/09'
+// import Usage, {Toggle} from '../exercises-final/09'
+import Usage, {Toggle} from '../exercises/09'
 
 test('toggling either toggle toggles both', () => {
   const {getAllByTestId} = renderToggle(<Usage />)
